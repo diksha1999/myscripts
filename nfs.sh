@@ -70,16 +70,16 @@ NFS_EXPORT=`showmount -e $IP --no-headers | awk '{ print $1 }'`
 echo $IP $NFS_EXPORT
 
 oc new-project nfs-subdir-external-provisioner
-sed -i "s-<NFS_EXPORT>-$NFS_EXPORT-g" ./objects/deployment.yaml
-sed -i "s/<IP>/$IP/g" ./objects/deployment.yaml
+sed -i "s-<NFS_EXPORT>-$NFS_EXPORT-g" NFS-OCP/objects/deployment.yaml
+sed -i "s/<IP>/$IP/g" NFS-OCP/objects/deployment.yaml
 
 NAMESPACE=`oc project -q`
-sed -i'' "s/namespace:.*/namespace: $NAMESPACE/g" ./objects/rbac.yaml ./objects/deployment.yaml
-oc create -f objects/rbac.yaml
+sed -i'' "s/namespace:.*/namespace: $NAMESPACE/g" NFS-OCP/objects/rbac.yaml ./objects/deployment.yaml
+oc create -f NFS-OCP/objects/rbac.yaml
 oc adm policy add-scc-to-user hostmount-anyuid system:serviceaccount:$NAMESPACE:nfs-client-provisioner   
 
-oc apply -f ./objects/deployment.yaml
-oc apply -f ./objects/class.yaml
+oc apply -f NFS-OCP/objects/deployment.yaml
+oc apply -f NFS-OCP/objects/class.yaml
 
 oc get all -n nfs-subdir-external-provisioner
 
